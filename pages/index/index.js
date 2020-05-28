@@ -14,17 +14,23 @@ Page({
 
   onLoad: function() {
     _this = this
+    colorPickerCtx = wx.createCanvasContext('colorPicker');
+    colorPickerCtx.fillStyle = 'rgb(255, 255, 255)';
+    sliderCtx = wx.createCanvasContext('colorPickerSlider');
+
+    let isInit = true;
     wx.createSelectorQuery().select('#colorPicker').boundingClientRect(function(rect) {
       _this.setData({
         valueWidthOrHerght: rect.width,
       })
-      colorPickerCtx = wx.createCanvasContext('colorPicker');
-      colorPickerCtx.fillStyle = 'rgb(255, 255, 255)';
-      colorPickerCtx.fillRect(0, 0, rect.width, rect.height);
-      util.drawRing(colorPickerCtx, rect.width, rect.height);
-      sliderCtx = wx.createCanvasContext('colorPickerSlider');
-      // 设置默认位置
-      util.drawSlider(sliderCtx, rect.width, rect.height, 1.0);
+      if(isInit){
+        colorPickerCtx.fillRect(0, 0, rect.width, rect.height);
+        util.drawRing(colorPickerCtx, rect.width, rect.height);
+        // 设置默认位置
+        util.drawSlider(sliderCtx, rect.width, rect.height, 1.0);
+        isInit = false;
+      }
+      
       _this.setData({
         pickColor: JSON.stringify({
           red: 255,
@@ -71,14 +77,14 @@ Page({
       })
     })
   },
-
-
+  
   onSlide: function(e) {
     let that = this;
-    if (e.touches && (e.touches[0] || e.type === 'touchEnd')) {
+    if (e.touches && ( e.type === 'touchend')) {
+      console.log("ok");
       let x = e.changedTouches[0].x;
       let y = e.changedTouches[0].y;
-      if (e.type !== 'touchEnd') {
+      if (e.type !== 'touchend') {
         x = e.touches[0].x;
         y = e.touches[0].y;
       }
